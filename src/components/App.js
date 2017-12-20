@@ -1,9 +1,23 @@
 import React from 'react'
 import styled from 'styled-components'
-
-
+import JSZip from 'jszip'
+import FileSaver from 'file-saver'
 
 class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.downloadZip = this.downloadZip.bind(this);
+    }
+    downloadZip() {
+        var zip = new JSZip();
+        zip.file("Hello.txt", "Hello World\n");
+        zip.generateAsync({ type: "blob" })
+            .then(function (content) {
+                // see FileSaver.js
+                FileSaver.saveAs(content, "example.zip");
+            });
+    }
+
     render() {
         const Window = styled.div`
             display: flex;
@@ -16,6 +30,7 @@ class App extends React.Component {
         `
         return (
             <Window>
+                <div onClick={this.downloadZip}>Download Zip</div>
                 <Header primary>
                     <NavLink>Store</NavLink>
                     <NavLink active>Library</NavLink>
