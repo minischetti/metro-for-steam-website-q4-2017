@@ -9,6 +9,11 @@ module.exports = {
         filename: "bundle.js",
         // publicPath: "assets"
     },
+    devServer: {
+        inline: true,
+        contentBase: './dist',
+        port: 3000
+    },
     module: {
         rules: [
             {
