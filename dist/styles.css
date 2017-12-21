@@ -1,4 +1,4 @@
-html, body, #app {
+html, body, #app, .wrap {
     display: flex;
     width: 100vw;
     height: 100vh;
@@ -12,4 +12,75 @@ body {
 
 * {
     box-sizing: border-box;
+}
+
+.wrap, .color-picker-container {
+    flex-direction: column;
+}
+
+.window {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 900px;
+    height: 600px;
+    background-color: black;
+    box-shadow: 0 0 40px rgba(0,0,0,.25);
+}
+
+.header {
+    display: flex;
+    width: 100%;
+    height: 60px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.header.secondary {
+    height: 40px;
+}
+
+.nav-button-container, .frame-button-container, .button-container, .color-picker-container {
+    display: flex;
+}
+
+.color-picker-container {
+    width: 25%;
+}
+
+.frame-button-container, .button-container {
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.nav-button, .frame-button {
+    display: flex;
+    width: 40px;
+    height: 60px;
+}
+
+.nav-button img, .frame-button img {
+    margin: auto;
+}
+
+.button {
+    width: 30px;
+    height: 30px;
+    margin: auto 10px auto 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.1);
+}
+
+.nav-link {
+    color: rgba(255,255,255,.25);
+    font-weight: 300;
+    text-transform: uppercase;
+    padding: 0 10px;
+    line-height: 60px;
+}
+
+.nav-button {
+}
+
+.nav-button.forward {
+    transform: rotateZ(180deg);
 }

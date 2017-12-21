@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="11px" height="10px" viewBox="0 0 11 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Latest" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-951.000000, -105.000000)">
+        <g id="Metro" transform="translate(81.000000, 81.000000)" fill="#FFFFFF">
+            <g id="Header" transform="translate(10.000000, 0.000000)">
+                <g id="Links" transform="translate(100.000000, 0.000000)">
+                    <g id="Frame-Buttons" transform="translate(690.000000, 10.000000)">
+                        <g id="Close" transform="translate(60.000000, 5.000000)">
+                            <g id="Group" transform="translate(10.000000, 9.000000)">
+                                <rect id="Rectangle-7" transform="translate(5.500000, 5.000000) rotate(-45.000000) translate(-5.500000, -5.000000) " x="5" y="-1" width="1" height="12"></rect>
+                                <rect id="Rectangle-7" transform="translate(5.500000, 5.000000) rotate(45.000000) translate(-5.500000, -5.000000) " x="5" y="-1" width="1" height="12"></rect>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
