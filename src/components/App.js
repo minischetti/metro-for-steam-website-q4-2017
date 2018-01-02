@@ -12,7 +12,8 @@ class App extends React.Component {
         this.updateRedValue = this.updateRedValue.bind(this);
         this.updateGreenValue = this.updateGreenValue.bind(this);
         this.updateBlueValue = this.updateBlueValue.bind(this);
-        this.state = { red: "0", green: "197", blue: "255" };
+        this.updateCustomizeState = this.updateCustomizeState.bind(this);
+        this.state = { customize: false, red: "0", green: "197", blue: "255" };
     }
     fetchOption() {
   
@@ -65,12 +66,20 @@ class App extends React.Component {
         this.setState({ blue: event.target.value });
     }
 
+    updateCustomizeState() {
+        this.setState({ customize: !this.state.customize });
+    }
+
     render() {
         return (
             <div className="wrap">
-                <div onClick={this.downloadZip}>Download</div>
-                <ColorPicker red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue}></ColorPicker>
-                <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip}></Steam>
+                <div className="button-container">
+                    <div onClick={this.updateCustomizeState} className="big-button">Customize</div>
+                    <div onClick={this.downloadZip} className="big-button">Download</div>
+                </div>
+                <p class="hero-text">A new look for the platform you already know and love. Metro is fresh and exciting from the moment you open Steam and beyond.</p>
+                {this.state.customize && <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue}/>}
+                <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip}/>
             </div>
         )
     }
@@ -116,6 +125,14 @@ class Steam extends React.Component {
                 </div>
                 <div className="header secondary"></div>
             </div>
+        )
+    }
+}
+
+class CustomizationPanel extends React.Component {
+    render() {
+        return (
+            <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue}/>
         )
     }
 }

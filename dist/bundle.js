@@ -25986,30 +25986,48 @@ var App = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.downloadZip = _this.downloadZip.bind(_this);
+        _this.fetchOption = _this.fetchOption.bind(_this);
         _this.compileOptions = _this.compileOptions.bind(_this);
         _this.updateRedValue = _this.updateRedValue.bind(_this);
         _this.updateGreenValue = _this.updateGreenValue.bind(_this);
         _this.updateBlueValue = _this.updateBlueValue.bind(_this);
-        _this.state = { red: "0", green: "197", blue: "255" };
+        _this.apiCallConstructor = _this.apiCallConstructor.bind(_this);
+        _this.state = { apiKey: "70186F62C1C66FB4BD40466B61ECA849", steamId: "76561197976957777", red: "0", green: "197", blue: "255" };
         return _this;
     }
 
     _createClass(App, [{
+        key: 'apiCallConstructor',
+        value: function apiCallConstructor(type) {
+            var steamId = this.state.steamId;
+            var apiKey = this.state.apiKey;
+            var steamApiUrl = 'http://api.steampowered.com/ISteamUser/' + type + '/v0002/?key=' + apiKey + '&steamids=' + steamId;
+            fetch(steamApiUrl).then(function (response) {
+                console.log(response.body);
+            });
+        }
+    }, {
+        key: 'fetchOption',
+        value: function fetchOption() {}
+    }, {
         key: 'downloadZip',
         value: function downloadZip() {
             var options = this.compileOptions();
+            var fetchOption = this.fetchOption();
             _jszipUtils2.default.getBinaryContent('metro-for-steam.zip', function (error, data) {
                 if (error) {
                     throw error;
                 }
-                console.log(data);
                 var zip = new _jszip2.default();
                 zip.loadAsync(data).then(function (zip) {
                     zip.file("custom.styles", options);
+                    zip.folder("resource/layout/").remove("steamrootdialog_gamespage_details.layout");
+                    zip.file("resource/layout/steamrootdialog_gamespage_details.layout", fetchOption);
+                    // let file = new File("options/steamrootdialog_gamespage_details.layout");
                     // zip.file("Hello.txt", "Hello World\n");
                     // var folder = zip.folder("images");
                     // folder.file("custom.styles", 'custom.styles"{colors{Focus="102 36 226 255"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}');
-                    console.log(zip);
+                    // console.log(zip);
                 }).then(function () {
                     zip.generateAsync({ type: "blob" }).then(function (data) {
                         console.log(data);
@@ -26024,7 +26042,7 @@ var App = function (_React$Component) {
             var red = this.state.red;
             var green = this.state.green;
             var blue = this.state.blue;
-            return 'custom.styles"{colors{accent="' + red + ' ' + green + ' ' + blue + ' 255"accentTransparent="' + red + ' ' + green + ' ' + blue + ' 38.25"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}';
+            return '"custom.styles"{colors{accent="' + red + ' ' + green + ' ' + blue + ' 255"accentTransparent="' + red + ' ' + green + ' ' + blue + ' 38.25"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}';
         }
     }, {
         key: 'updateRedValue',
@@ -26053,7 +26071,7 @@ var App = function (_React$Component) {
                     'Download'
                 ),
                 _react2.default.createElement(ColorPicker, { red: this.state.red, green: this.state.green, blue: this.state.blue, updateRedValue: this.updateRedValue, updateGreenValue: this.updateGreenValue, updateBlueValue: this.updateBlueValue }),
-                _react2.default.createElement(Steam, { red: this.state.red, green: this.state.green, blue: this.state.blue, downloadZip: this.downloadZip })
+                _react2.default.createElement(Steam, { apiCallConstructor: this.apiCallConstructor, red: this.state.red, green: this.state.green, blue: this.state.blue, downloadZip: this.downloadZip })
             );
         }
     }]);
@@ -26079,6 +26097,11 @@ var Steam = function (_React$Component2) {
             return _react2.default.createElement(
                 'div',
                 { className: 'window', style: { backgroundImage: 'linear-gradient(rgba(' + red + ', ' + green + ', ' + blue + ', .15), black)' } },
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    this.props.apiCallConstructor("GetPlayerSummaries")
+                ),
                 _react2.default.createElement(
                     'div',
                     { className: 'header' },
