@@ -72,14 +72,19 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="wrap">
-                <div className="button-container">
-                    <div onClick={this.updateCustomizeState} className="big-button">Customize</div>
-                    <div onClick={this.downloadZip} className="big-button">Download</div>
+            <div className={`page ${this.state.customize ? "customize" : "home"}`}>
+                <div className="main">
+                    <div className="background-color" style={{ backgroundColor: `rgba(${this.state.red}, ${this.state.green}, ${this.state.blue}, .25)` }}></div>
+                    <div className="button-container">
+                        <div onClick={this.updateCustomizeState} className="big-button customize-button">Customize</div>
+                        <div onClick={this.downloadZip} className="big-button download-button">Download</div>
+                    </div>
+                    <p className="hero-text">A new look for the platform you already know and love.</p>
+                    <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip}/>
                 </div>
-                <p class="hero-text">A new look for the platform you already know and love. Metro is fresh and exciting from the moment you open Steam and beyond.</p>
-                {this.state.customize && <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue}/>}
-                <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip}/>
+                <div className="customization-panel">
+                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue}/>
+                </div>
             </div>
         )
     }
@@ -132,7 +137,24 @@ class Steam extends React.Component {
 class CustomizationPanel extends React.Component {
     render() {
         return (
-            <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue}/>
+            <div>
+                <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue}/>
+                <DetailsViewSettings/>
+            </div>
+        )
+    }
+}
+
+class DetailsViewSettings extends React.Component {
+    render() {
+        return(
+            <div className="details-settings-container settings-container">
+                <div className="setting-title">Details View</div>
+                <div className="setting-content-container">
+                    <input type="checkbox" id="sidebar-toggle"/>
+                    <label htmlFor="sidebar-toggle">Sidebar Links</label>
+                </div>
+            </div>
         )
     }
 }
@@ -143,10 +165,13 @@ class ColorPicker extends React.Component {
         const green = this.props.green;
         const blue = this.props.blue;
         return (
-            <div className="color-picker-container">
-                <input type="range" min="1" max="255" defaultValue={red} className="slider" onInput={this.props.updateRedValue} id="red" />
-                <input type="range" min="1" max="255" defaultValue={green} className="slider" onChange={this.props.updateGreenValue} id="green" />
-                <input type="range" min="1" max="255" defaultValue={blue} className="slider" onChange={this.props.updateBlueValue} id="blue" />
+            <div className="color-picker-container settings-container">
+                <div className="setting-title">Color</div>
+                <div className="setting-content-container">
+                    <input type="range" min="1" max="255" defaultValue={red} className="slider" onInput={this.props.updateRedValue} id="red" />
+                    <input type="range" min="1" max="255" defaultValue={green} className="slider" onChange={this.props.updateGreenValue} id="green" />
+                    <input type="range" min="1" max="255" defaultValue={blue} className="slider" onChange={this.props.updateBlueValue} id="blue" />
+                </div>
             </div>
         )
     }
