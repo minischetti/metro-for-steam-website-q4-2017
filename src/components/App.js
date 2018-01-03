@@ -13,10 +13,19 @@ class App extends React.Component {
         this.updateGreenValue = this.updateGreenValue.bind(this);
         this.updateBlueValue = this.updateBlueValue.bind(this);
         this.updateCustomizeState = this.updateCustomizeState.bind(this);
+        this.fetchWebFonts = this.fetchWebFonts.bind(this);
         this.state = { customize: false, red: "0", green: "197", blue: "255" };
     }
+    fetchWebFonts() {
+        fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDSW59mWbjuZsgiiZNds-q8CpZYjgEejfc')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log(data);
+        });
+    }
     fetchOption() {
-  
     }
     downloadZip() {
         const options = this.compileOptions();
@@ -71,6 +80,7 @@ class App extends React.Component {
     }
 
     render() {
+        const fetchWebFonts = this.fetchWebFonts();
         return (
             <div className={`page ${this.state.customize ? "customize" : "home"}`}>
                 <div className="main">
@@ -111,7 +121,7 @@ class Steam extends React.Component {
                     <span className="nav-link active" style={{ boxShadow: `inset 0 1px 0 rgb(${red}, ${green}, ${blue})`, color: `rgb(${red}, ${green}, ${blue})` }}>Store</span>
                     <span className="nav-link">Library</span>
                     <span className="nav-link">Community</span>
-                    <div className="button-container">
+                    <div className="action-button-container">
                         <div className="button"></div>
                         <div className="button"></div>
                         <div className="button"></div>
