@@ -7,29 +7,46 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.downloadZip = this.downloadZip.bind(this);
-        this.fetchOption = this.fetchOption.bind(this);
         this.compileOptions = this.compileOptions.bind(this);
         this.updateRedValue = this.updateRedValue.bind(this);
         this.updateGreenValue = this.updateGreenValue.bind(this);
         this.updateBlueValue = this.updateBlueValue.bind(this);
         this.updateCustomizeState = this.updateCustomizeState.bind(this);
         this.fetchWebFonts = this.fetchWebFonts.bind(this);
-        this.state = { customize: false, red: "0", green: "197", blue: "255" };
+        this.constructCompatibleFontList = this.constructCompatibleFontList.bind(this);
+        this.state = { compatibleFonts: [], customize: false, red: "0", green: "197", blue: "255" };
     }
+
+    constructCompatibleFontList(compatibleFonts) {
+        this.setState({ compatibleFonts: compatibleFonts })
+    }
+
     fetchWebFonts() {
         fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDSW59mWbjuZsgiiZNds-q8CpZYjgEejfc')
-        .then(function(response) {
+        .then((response) => {
             return response.json();
         })
-        .then(function(data) {
-            console.log(data);
+        .then((data) => {
+            const fontList = data.items;
+            const lightWeight = "300";
+            const regularWeight = "regular";
+            const boldWeight = "800";
+            const compatibleFonts = new Array;
+            fontList.forEach(font => {
+                const fontVariants = font.variants;
+                if (fontVariants.includes(lightWeight) && fontVariants.includes(boldWeight) && fontVariants.includes(regularWeight)) {
+                    const fontObject = new Object();
+                    fontObject.name = font.family;
+                    fontObject.files = new Array(font.files[lightWeight], font.files[regularWeight], font.files[boldWeight]);
+                    compatibleFonts.push(fontObject);
+                }
+            });
+            this.constructCompatibleFontList(compatibleFonts);
         });
     }
-    fetchOption() {
-    }
+
     downloadZip() {
         const options = this.compileOptions();
-        const fetchOption = this.fetchOption();
         JSZipUtils.getBinaryContent('metro-for-steam.zip', function (error, data) {
             if (error) {
                 throw error;
