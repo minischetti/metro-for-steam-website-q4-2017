@@ -16,6 +16,7 @@ class App extends React.Component {
         this.constructCompatibleFontList = this.constructCompatibleFontList.bind(this);
         this.constructFontImport = this.constructFontImport.bind(this);
         this.updateSelectedFont = this.updateSelectedFont.bind(this);
+        this.retrieveSelectedFont = this.retrieveSelectedFont.bind(this);
         this.state = { compatibleFonts: [], selectedFont: "Roboto", customize: false, red: "0", green: "197", blue: "255" };
     }
 
@@ -38,57 +39,69 @@ class App extends React.Component {
         });
     }
 
+    retrieveSelectedFont() {
+        const selectedFont = this.state.selectedFont;
+        const fontFiles = selectedFont.files[0];
+        return fetch(fontFiles)
+            .then((response) => {
+                return response.blob();
+            });
+    }
+
     fetchWebFonts() {
         fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDSW59mWbjuZsgiiZNds-q8CpZYjgEejfc')
-        .then((response) => {
-            return response.json();
-        })
-        .then((data) => {
-            const fontList = data.items;
-            const lightWeight = "300";
-            const regularWeight = "regular";
-            const boldWeight = "800";
-            const compatibleFonts = new Array;
-            fontList.forEach(font => {
-                const fontVariants = font.variants;
-                if (fontVariants.includes(lightWeight) && fontVariants.includes(boldWeight) && fontVariants.includes(regularWeight)) {
-                    const fontObject = new Object();
-                    fontObject.name = font.family;
-                    fontObject.files = new Array(font.files[lightWeight], font.files[regularWeight], font.files[boldWeight]);
-                    compatibleFonts.push(fontObject);
-                }
-            });
-            this.constructCompatibleFontList(compatibleFonts);
-            // const compatibleFont = this.state.compatibleFonts[2].name;
-            // linkObject.href = `https://fonts.googleapis.com/css?family=${compatibleFont.replace(" ", "+")}`
-            // document.head.appendChild(linkObject);
-            // document.body.style.fontFamily = `${compatibleFont}`;
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                const fontList = data.items;
+                const lightWeight = "100";
+                const regularWeight = "regular";
+                const boldWeight = "800";
+                const compatibleFonts = new Array;
+                fontList.forEach(font => {
+                    const fontVariants = font.variants;
+                    if (fontVariants.includes(lightWeight) && fontVariants.includes(boldWeight) && fontVariants.includes(regularWeight)) {
+                        const fontObject = new Object();
+                        fontObject.name = font.family;
+                        fontObject.files = new Array(font.files[lightWeight], font.files[regularWeight], font.files[boldWeight]);
+                        compatibleFonts.push(fontObject);
+                    }
+                });
+                this.constructCompatibleFontList(compatibleFonts);
+                // const compatibleFont = this.state.compatibleFonts[2].name;
+                // linkObject.href = `https://fonts.googleapis.com/css?family=${compatibleFont.replace(" ", "+")}`
+                // document.head.appendChild(linkObject);
+                // document.body.style.fontFamily = `${compatibleFont}`;
 
-        });
+            });
     }
 
     downloadZip() {
         const options = this.compileOptions();
-        JSZipUtils.getBinaryContent('metro-for-steam.zip', function (error, data) {
+        const selectedFont = this.retrieveSelectedFont();
+        console.log("withinDownloadZipFunction: ", selectedFont);
+        JSZipUtils.getBinaryContent('metro-for-steam.zip', (error, data) => {
             if (error) {
                 throw error;
             }
             var zip = new JSZip();
             zip.loadAsync(data)
-                .then(function (zip) {
+                .then((zip) => {
                     zip.file("custom.styles", options);
                     zip.folder("resource/layout/").remove("steamrootdialog_gamespage_details.layout");
-                    zip.file("resource/layout/steamrootdialog_gamespage_details.layout", fetchOption);
+                    console.log("withinPromise", selectedFont);
+                    zip.folder("font").file("font.ttf", selectedFont);
+                    // zip.file("resource/layout/steamrootdialog_gamespage_details.layout", fetchOption);
                     // let file = new File("options/steamrootdialog_gamespage_details.layout");
                     // zip.file("Hello.txt", "Hello World\n");
                     // var folder = zip.folder("images");
                     // folder.file("custom.styles", 'custom.styles"{colors{Focus="102 36 226 255"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}');
                     // console.log(zip);
                 })
-                .then(function () {
+                .then(() => {
                     zip.generateAsync({ type: "blob" })
                         .then(function (data) {
-                            console.log(data);
                             FileSaver.saveAs(data, "metro-for-steam.zip");
                         });
                 });
@@ -102,9 +115,9 @@ class App extends React.Component {
         return `"custom.styles"{colors{accent="${red} ${green} ${blue} 255"accentTransparent="${red} ${green} ${blue} 38.25"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}`;
     }
 
-    updateSelectedFont(font) {
-        console.log(font);
-        this.setState( { selectedFont: font } );
+    updateSelectedFont(fontIndex) {
+        const selectedFont = this.state.compatibleFonts[fontIndex];
+        this.setState({ selectedFont: selectedFont });
     }
 
     updateRedValue(event) {
@@ -133,10 +146,10 @@ class App extends React.Component {
                         <div onClick={this.downloadZip} className="big-button download-button">Download</div>
                     </div>
                     <p className="hero-text">A new look for the platform you already know and love.</p>
-                    <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont}/>
+                    <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont} />
                 </div>
                 <div className="customization-panel">
-                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} fonts={this.state.compatibleFonts}/>
+                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} fonts={this.state.compatibleFonts} />
                 </div>
             </div>
         )
@@ -150,9 +163,10 @@ class Steam extends React.Component {
         const red = this.props.red;
         const green = this.props.green;
         const blue = this.props.blue;
+        const selectedFont = this.props.selectedFont;
         const windowStyle = {
             backgroundImage: `linear-gradient(rgba(${red}, ${green}, ${blue}, .15), black)`,
-            fontFamily: this.props.selectedFont
+            fontFamily: selectedFont.name
         };
         return (
             <div className="window" style={windowStyle}>
@@ -195,8 +209,8 @@ class CustomizationPanel extends React.Component {
     render() {
         return (
             <div>
-                <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue}/>
-                <DetailsViewSettings/>
+                <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue} />
+                <DetailsViewSettings />
                 <FontList fonts={this.props.fonts} updateSelectedFont={this.props.updateSelectedFont} />
             </div>
         )
@@ -209,7 +223,7 @@ class DetailsViewSettings extends React.Component {
             <div className="details-settings-container settings-container">
                 <div className="setting-title">Details View</div>
                 <div className="setting-content-container">
-                    <input type="checkbox" id="sidebar-toggle"/>
+                    <input type="checkbox" id="sidebar-toggle" />
                     <label htmlFor="sidebar-toggle">Sidebar Links</label>
                 </div>
             </div>
@@ -233,8 +247,8 @@ class FontList extends React.Component {
     }
     render() {
         const fonts = this.props.fonts;
-        const fontList = fonts.map((font) =>
-            <option key={font.name} value={font.name} style={{ fontFamily: font.name }}>{font.name}</option>
+        const fontList = fonts.map((font, index) =>
+            <option key={font.name} value={index} style={{ fontFamily: font.name }}>{font.name}</option>
         );
         return (
             <div className="font-settings-container settings-container">
