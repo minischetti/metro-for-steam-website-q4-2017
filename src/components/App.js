@@ -15,7 +15,8 @@ class App extends React.Component {
         this.fetchWebFonts = this.fetchWebFonts.bind(this);
         this.constructCompatibleFontList = this.constructCompatibleFontList.bind(this);
         this.constructFontImport = this.constructFontImport.bind(this);
-        this.state = { compatibleFonts: [], customize: false, red: "0", green: "197", blue: "255" };
+        this.updateSelectedFont = this.updateSelectedFont.bind(this);
+        this.state = { compatibleFonts: [], selectedFont: "Roboto", customize: false, red: "0", green: "197", blue: "255" };
     }
 
     componentDidMount() {
@@ -27,7 +28,6 @@ class App extends React.Component {
         const steamWindow = document.querySelector(".window");
         styleObject.innerHTML = `@import url('https://fonts.googleapis.com/css?family=${name.replace(' ', '+')}:100,400,800');`;
         document.body.appendChild(styleObject);
-        steamWindow.style.fontFamily = `'${name}', 'sans-serif'`;
     }
 
     constructCompatibleFontList(compatibleFonts) {
@@ -102,6 +102,11 @@ class App extends React.Component {
         return `"custom.styles"{colors{accent="${red} ${green} ${blue} 255"accentTransparent="${red} ${green} ${blue} 38.25"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}`;
     }
 
+    updateSelectedFont(font) {
+        console.log(font);
+        this.setState( { selectedFont: font } );
+    }
+
     updateRedValue(event) {
         this.setState({ red: event.target.value });
     }
@@ -128,10 +133,10 @@ class App extends React.Component {
                         <div onClick={this.downloadZip} className="big-button download-button">Download</div>
                     </div>
                     <p className="hero-text">A new look for the platform you already know and love.</p>
-                    <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip}/>
+                    <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont}/>
                 </div>
                 <div className="customization-panel">
-                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} fonts={this.state.compatibleFonts}/>
+                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} fonts={this.state.compatibleFonts}/>
                 </div>
             </div>
         )
@@ -145,8 +150,12 @@ class Steam extends React.Component {
         const red = this.props.red;
         const green = this.props.green;
         const blue = this.props.blue;
+        const windowStyle = {
+            backgroundImage: `linear-gradient(rgba(${red}, ${green}, ${blue}, .15), black)`,
+            fontFamily: this.props.selectedFont
+        };
         return (
-            <div className="window" style={{ backgroundImage: `linear-gradient(rgba(${red}, ${green}, ${blue}, .15), black)` }}>
+            <div className="window" style={windowStyle}>
                 <div className="header">
                     <div className="nav-button-container">
                         <div className="nav-button">
@@ -188,7 +197,7 @@ class CustomizationPanel extends React.Component {
             <div>
                 <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue}/>
                 <DetailsViewSettings/>
-                <FontList fonts={this.props.fonts}/>
+                <FontList fonts={this.props.fonts} updateSelectedFont={this.props.updateSelectedFont} />
             </div>
         )
     }
@@ -209,16 +218,32 @@ class DetailsViewSettings extends React.Component {
 }
 
 class FontList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleFontChange = this.handleFontChange.bind(this);
+    }
+    componentDidMount() {
+        const fontList = document.getElementById("font-list");
+        fontList.addEventListener("change", (event) => {
+            this.handleFontChange(event.target.value);
+        });
+    }
+    handleFontChange(font) {
+        this.props.updateSelectedFont(font);
+    }
     render() {
         const fonts = this.props.fonts;
         const fontList = fonts.map((font) =>
-            <li>{font.name}</li>
+            <option key={font.name} value={font.name} style={{ fontFamily: font.name }}>{font.name}</option>
         );
         return (
             <div className="font-settings-container settings-container">
-                <ul>
-                    {fontList}
-                </ul>
+                <div className="setting-title">Font</div>
+                <form className="setting-content-container">
+                    <select name="font" id="font-list" size="10" className="font-list">
+                        {fontList}
+                    </select>
+                </form>
             </div>
         )
     }

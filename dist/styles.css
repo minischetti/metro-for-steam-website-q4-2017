@@ -225,3 +225,22 @@ input[type=range]::-webkit-slider-thumb {
 .customize .main {
     width: 80%;
 }
+
+/* Font List */
+.font-list {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid rgba(255,255,255,.25);
+    color: white;
+}
+
+.font-list:focus {
+    outline: none;
+}
+
+.font-list option {
+    font-size: 14px;
+    padding-left: 10px;
+    padding-top: 5px;
+    height: 30px;
+}
