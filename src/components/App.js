@@ -14,11 +14,28 @@ class App extends React.Component {
         this.updateCustomizeState = this.updateCustomizeState.bind(this);
         this.fetchWebFonts = this.fetchWebFonts.bind(this);
         this.constructCompatibleFontList = this.constructCompatibleFontList.bind(this);
+        this.constructFontImport = this.constructFontImport.bind(this);
         this.state = { compatibleFonts: [], customize: false, red: "0", green: "197", blue: "255" };
     }
 
+    componentDidMount() {
+        this.fetchWebFonts();
+    }
+
+    constructFontImport(name) {
+        const styleObject = document.createElement("style");
+        const steamWindow = document.querySelector(".window");
+        styleObject.innerHTML = `@import url('https://fonts.googleapis.com/css?family=${name.replace(' ', '+')}:100,400,800');`;
+        document.body.appendChild(styleObject);
+        steamWindow.style.fontFamily = `'${name}', 'sans-serif'`;
+    }
+
     constructCompatibleFontList(compatibleFonts) {
-        this.setState({ compatibleFonts: compatibleFonts })
+        this.setState({ compatibleFonts: compatibleFonts });
+        const newFonts = this.state.compatibleFonts;
+        newFonts.forEach((font) => {
+            this.constructFontImport(font.name);
+        });
     }
 
     fetchWebFonts() {
@@ -42,6 +59,11 @@ class App extends React.Component {
                 }
             });
             this.constructCompatibleFontList(compatibleFonts);
+            // const compatibleFont = this.state.compatibleFonts[2].name;
+            // linkObject.href = `https://fonts.googleapis.com/css?family=${compatibleFont.replace(" ", "+")}`
+            // document.head.appendChild(linkObject);
+            // document.body.style.fontFamily = `${compatibleFont}`;
+
         });
     }
 
@@ -97,7 +119,6 @@ class App extends React.Component {
     }
 
     render() {
-        const fetchWebFonts = this.fetchWebFonts();
         return (
             <div className={`page ${this.state.customize ? "customize" : "home"}`}>
                 <div className="main">
@@ -110,7 +131,7 @@ class App extends React.Component {
                     <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip}/>
                 </div>
                 <div className="customization-panel">
-                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue}/>
+                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} fonts={this.state.compatibleFonts}/>
                 </div>
             </div>
         )
@@ -167,6 +188,7 @@ class CustomizationPanel extends React.Component {
             <div>
                 <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue}/>
                 <DetailsViewSettings/>
+                <FontList fonts={this.props.fonts}/>
             </div>
         )
     }
@@ -174,13 +196,29 @@ class CustomizationPanel extends React.Component {
 
 class DetailsViewSettings extends React.Component {
     render() {
-        return(
+        return (
             <div className="details-settings-container settings-container">
                 <div className="setting-title">Details View</div>
                 <div className="setting-content-container">
                     <input type="checkbox" id="sidebar-toggle"/>
                     <label htmlFor="sidebar-toggle">Sidebar Links</label>
                 </div>
+            </div>
+        )
+    }
+}
+
+class FontList extends React.Component {
+    render() {
+        const fonts = this.props.fonts;
+        const fontList = fonts.map((font) =>
+            <li>{font.name}</li>
+        );
+        return (
+            <div className="font-settings-container settings-container">
+                <ul>
+                    {fontList}
+                </ul>
             </div>
         )
     }
