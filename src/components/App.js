@@ -27,7 +27,7 @@ class App extends React.Component {
     constructFontImport(name) {
         const styleObject = document.createElement("style");
         const steamWindow = document.querySelector(".window");
-        styleObject.innerHTML = `@import url('https://fonts.googleapis.com/css?family=${name.replace(' ', '+')}:100,400,800');`;
+        styleObject.innerHTML = `@import url('https://fonts.googleapis.com/css?family=${name.replace(' ', '+')}:300,400,700');`;
         document.body.appendChild(styleObject);
     }
 
@@ -39,9 +39,9 @@ class App extends React.Component {
         });
     }
 
-    retrieveSelectedFont() {
+    retrieveSelectedFont(file) {
         const selectedFont = this.state.selectedFont;
-        const fontFiles = selectedFont.files[0];
+        const fontFiles = selectedFont.files[file];
         return fetch(fontFiles)
             .then((response) => {
                 return response.blob();
@@ -55,9 +55,10 @@ class App extends React.Component {
             })
             .then((data) => {
                 const fontList = data.items;
-                const lightWeight = "100";
+                // console.log(data.items[8]);
+                const lightWeight = "300";
                 const regularWeight = "regular";
-                const boldWeight = "800";
+                const boldWeight = "700";
                 const compatibleFonts = new Array;
                 fontList.forEach(font => {
                     const fontVariants = font.variants;
@@ -69,18 +70,12 @@ class App extends React.Component {
                     }
                 });
                 this.constructCompatibleFontList(compatibleFonts);
-                // const compatibleFont = this.state.compatibleFonts[2].name;
-                // linkObject.href = `https://fonts.googleapis.com/css?family=${compatibleFont.replace(" ", "+")}`
-                // document.head.appendChild(linkObject);
-                // document.body.style.fontFamily = `${compatibleFont}`;
-
             });
     }
 
     downloadZip() {
         const options = this.compileOptions();
-        const selectedFont = this.retrieveSelectedFont();
-        console.log("withinDownloadZipFunction: ", selectedFont);
+        const selectedFontName = this.state.selectedFont.name.replace(" ","");
         JSZipUtils.getBinaryContent('metro-for-steam.zip', (error, data) => {
             if (error) {
                 throw error;
@@ -89,15 +84,15 @@ class App extends React.Component {
             zip.loadAsync(data)
                 .then((zip) => {
                     zip.file("custom.styles", options);
-                    zip.folder("resource/layout/").remove("steamrootdialog_gamespage_details.layout");
-                    console.log("withinPromise", selectedFont);
-                    zip.folder("font").file("font.ttf", selectedFont);
+
+                    // TODO If a setting requires that this file is modified, remove the old one and replace it with the new one
+                    // zip.folder("resource/layout/").remove("steamrootdialog_gamespage_details.layout");
                     // zip.file("resource/layout/steamrootdialog_gamespage_details.layout", fetchOption);
-                    // let file = new File("options/steamrootdialog_gamespage_details.layout");
-                    // zip.file("Hello.txt", "Hello World\n");
-                    // var folder = zip.folder("images");
-                    // folder.file("custom.styles", 'custom.styles"{colors{Focus="102 36 226 255"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}');
-                    // console.log(zip);
+
+                    // Package Selected Font's Weights as Separate Files
+                    zip.folder("font").file(`${selectedFontName}Light.ttf`, this.retrieveSelectedFont(0));
+                    zip.folder("font").file(`${selectedFontName}Regular.ttf`, this.retrieveSelectedFont(1));
+                    zip.folder("font").file(`${selectedFontName}Bold.ttf`, this.retrieveSelectedFont(2));
                 })
                 .then(() => {
                     zip.generateAsync({ type: "blob" })
@@ -112,7 +107,8 @@ class App extends React.Component {
         const red = this.state.red;
         const green = this.state.green;
         const blue = this.state.blue;
-        return `"custom.styles"{colors{accent="${red} ${green} ${blue} 255"accentTransparent="${red} ${green} ${blue} 38.25"basefont="Roboto"boldfont="Roboto Bold"lightfont="Roboto Light"}}`;
+        const selectedFont = this.state.selectedFont;
+        return `"custom.styles"{colors{accent="${red} ${green} ${blue} 255"accentTransparent="${red} ${green} ${blue} 38.25"basefont="${selectedFont.name}"boldfont="${selectedFont.name} Bold"lightfont="${selectedFont.name} Light"}}`;
     }
 
     updateSelectedFont(fontIndex) {
