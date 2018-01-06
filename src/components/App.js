@@ -75,7 +75,7 @@ class App extends React.Component {
 
     downloadZip() {
         const options = this.compileOptions();
-        const selectedFontName = this.state.selectedFont.name.replace(" ","");
+        const selectedFontName = this.state.selectedFont.name.replace(" ", "");
         JSZipUtils.getBinaryContent('metro-for-steam.zip', (error, data) => {
             if (error) {
                 throw error;
@@ -145,7 +145,7 @@ class App extends React.Component {
                     <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont} />
                 </div>
                 <div className="customization-panel">
-                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} fonts={this.state.compatibleFonts} />
+                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} selectedFont={this.state.selectedFont} fonts={this.state.compatibleFonts} />
                 </div>
             </div>
         )
@@ -206,8 +206,83 @@ class CustomizationPanel extends React.Component {
         return (
             <div>
                 <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue} />
+                <FontList fonts={this.props.fonts} updateSelectedFont={this.props.updateSelectedFont} selectedFont={this.props.selectedFont} />
                 <DetailsViewSettings />
-                <FontList fonts={this.props.fonts} updateSelectedFont={this.props.updateSelectedFont} />
+            </div>
+        )
+    }
+}
+
+class ColorPicker extends React.Component {
+    render() {
+        const red = this.props.red;
+        const green = this.props.green;
+        const blue = this.props.blue;
+        return (
+            <div className="color-picker-container settings-container">
+                <div className="setting-header">
+                    <div className="setting-title">Color</div>
+                    <div className="setting-current">rgb({red}, {green}, {blue})</div>
+                </div>
+                <div className="setting-content-container">
+                    <input type="range" min="1" max="255" defaultValue={red} className="slider" onInput={this.props.updateRedValue} id="red" />
+                    <input type="range" min="1" max="255" defaultValue={green} className="slider" onChange={this.props.updateGreenValue} id="green" />
+                    <input type="range" min="1" max="255" defaultValue={blue} className="slider" onChange={this.props.updateBlueValue} id="blue" />
+                </div>
+            </div>
+        )
+    }
+}
+
+class FontList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleFontChange = this.handleFontChange.bind(this);
+        this.autoScrollElement = this.autoScrollElement.bind(this);
+    }
+    componentDidMount() {
+        const fontList = document.getElementById("font-list");
+        fontList.addEventListener("change", (event) => {
+            this.handleFontChange(event.target.value);
+        });
+    }
+    autoScrollElement() {
+        const elements = document.querySelectorAll(".auto-scroll-element");
+        elements.forEach((element) => {
+            const scrollEnd = element.scrollWidth;
+            let distance = 0;
+            let scroller = setInterval(() => {
+                if (distance < scrollEnd) {
+                    element.scrollLeft = distance;
+                    distance++;
+                } else {
+                    distance = 0;
+                    clearInterval(scroller);
+                }
+            }, 60);
+        });
+    }
+    handleFontChange(font) {
+        this.props.updateSelectedFont(font);
+        this.autoScrollElement();
+    }
+    render() {
+        const selectedFont = this.props.selectedFont.name || "Roboto";
+        const fonts = this.props.fonts;
+        const fontList = fonts.map((font, index) =>
+            <option key={font.name} value={index} style={{ fontFamily: font.name }}>{font.name}</option>
+        );
+        return (
+            <div className="font-settings-container settings-container">
+                <div className="setting-header">
+                    <div className="setting-title">Font</div>
+                    <div className="setting-current auto-scroll-element">{selectedFont}</div>
+                </div>
+                <form>
+                    <select name="font" id="font-list" size="10" className="font-list">
+                        {fontList}
+                    </select>
+                </form>
             </div>
         )
     }
@@ -221,56 +296,6 @@ class DetailsViewSettings extends React.Component {
                 <div className="setting-content-container">
                     <input type="checkbox" id="sidebar-toggle" />
                     <label htmlFor="sidebar-toggle">Sidebar Links</label>
-                </div>
-            </div>
-        )
-    }
-}
-
-class FontList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleFontChange = this.handleFontChange.bind(this);
-    }
-    componentDidMount() {
-        const fontList = document.getElementById("font-list");
-        fontList.addEventListener("change", (event) => {
-            this.handleFontChange(event.target.value);
-        });
-    }
-    handleFontChange(font) {
-        this.props.updateSelectedFont(font);
-    }
-    render() {
-        const fonts = this.props.fonts;
-        const fontList = fonts.map((font, index) =>
-            <option key={font.name} value={index} style={{ fontFamily: font.name }}>{font.name}</option>
-        );
-        return (
-            <div className="font-settings-container settings-container">
-                <div className="setting-title">Font</div>
-                <form className="setting-content-container">
-                    <select name="font" id="font-list" size="10" className="font-list">
-                        {fontList}
-                    </select>
-                </form>
-            </div>
-        )
-    }
-}
-
-class ColorPicker extends React.Component {
-    render() {
-        const red = this.props.red;
-        const green = this.props.green;
-        const blue = this.props.blue;
-        return (
-            <div className="color-picker-container settings-container">
-                <div className="setting-title">Color</div>
-                <div className="setting-content-container">
-                    <input type="range" min="1" max="255" defaultValue={red} className="slider" onInput={this.props.updateRedValue} id="red" />
-                    <input type="range" min="1" max="255" defaultValue={green} className="slider" onChange={this.props.updateGreenValue} id="green" />
-                    <input type="range" min="1" max="255" defaultValue={blue} className="slider" onChange={this.props.updateBlueValue} id="blue" />
                 </div>
             </div>
         )
