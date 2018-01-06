@@ -145,8 +145,8 @@ p {
 /* Customization Panel */
 .customization-panel {
     position: absolute;
-    right: -220px;
-    width: 220px;
+    right: -260px;
+    width: 260px;
     top: 20px;
     bottom: 20px;
     transition: .5s right;
@@ -167,7 +167,7 @@ p {
     width: 100%;
     margin: auto;
     margin-left: 10px;
-    font-size: 12px;
+    font-size: 10px;
     text-transform: uppercase;
     text-align: right;
     white-space: nowrap;
@@ -241,7 +241,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 .customize .main {
-    width: 80%;
+    width: calc(100vw - 260px);
 }
 
 /* Font List */

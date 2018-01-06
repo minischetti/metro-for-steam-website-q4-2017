@@ -239,6 +239,8 @@ class FontList extends React.Component {
         super(props);
         this.handleFontChange = this.handleFontChange.bind(this);
         this.autoScrollElement = this.autoScrollElement.bind(this);
+        this.startScroll = this.startScroll.bind(this);
+        this.state = { intervalId: "" }
     }
     componentDidMount() {
         const fontList = document.getElementById("font-list");
@@ -249,22 +251,27 @@ class FontList extends React.Component {
     autoScrollElement() {
         const elements = document.querySelectorAll(".auto-scroll-element");
         elements.forEach((element) => {
+            const elementWidth = element.offsetWidth;
             const scrollEnd = element.scrollWidth;
-            let distance = 0;
-            let scroller = setInterval(() => {
-                if (distance < scrollEnd) {
-                    element.scrollLeft = distance;
-                    distance++;
-                } else {
-                    distance = 0;
-                    clearInterval(scroller);
-                }
-            }, 60);
+            const distanceToEnd = scrollEnd - elementWidth;
+            let distance = this.state.intervalId;
+            if (distance < distanceToEnd) {
+                element.scrollLeft = distance;
+                this.setState({intervalId: distance + .25});
+            } else {
+                this.setState({intervalId: 0});
+                clearInterval(this.state.intervalId);
+            }
         });
     }
+    startScroll() {
+        let intervalId = setInterval(this.autoScrollElement, 60);
+        this.setState({ intervalId: intervalId })
+    }
+
     handleFontChange(font) {
         this.props.updateSelectedFont(font);
-        this.autoScrollElement();
+        // this.startScroll();
     }
     render() {
         const selectedFont = this.props.selectedFont.name || "Roboto";
