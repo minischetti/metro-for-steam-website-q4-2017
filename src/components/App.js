@@ -55,13 +55,19 @@ class App extends React.Component {
             })
             .then((data) => {
                 const fontList = data.items;
-                // console.log(data.items[8]);
                 const lightWeight = "300";
                 const regularWeight = "regular";
                 const boldWeight = "700";
                 const compatibleFonts = new Array;
                 fontList.forEach(font => {
                     const fontVariants = font.variants;
+                    const fontName = font.family;
+                    if (fontName === "Roboto") {
+                        const fontObject = new Object();
+                        fontObject.name = font.family;
+                        fontObject.files = new Array(font.files[lightWeight], font.files[regularWeight], font.files[boldWeight]);
+                        this.setDefaultFont(fontObject);
+                    }
                     if (fontVariants.includes(lightWeight) && fontVariants.includes(boldWeight) && fontVariants.includes(regularWeight)) {
                         const fontObject = new Object();
                         fontObject.name = font.family;
@@ -109,6 +115,10 @@ class App extends React.Component {
         const blue = this.state.blue;
         const selectedFont = this.state.selectedFont;
         return `"custom.styles"{colors{accent="${red} ${green} ${blue} 255"accentTransparent="${red} ${green} ${blue} 38.25"basefont="${selectedFont.name}"boldfont="${selectedFont.name} Bold"lightfont="${selectedFont.name} Light"}}`;
+    }
+
+    setDefaultFont(font) {
+        this.setState ({ selectedFont: font });
     }
 
     updateSelectedFont(fontIndex) {
@@ -303,10 +313,14 @@ class DetailsViewSettings extends React.Component {
     render() {
         return (
             <div className="details-settings-container settings-container">
-                <div className="setting-title">Details View</div>
+                <div className="setting-header">
+                    <div className="setting-title">Details View</div>
+                </div>
                 <div className="setting-content-container">
-                    <input type="checkbox" id="sidebar-toggle" />
-                    <label htmlFor="sidebar-toggle">Sidebar Links</label>
+                    <div className="checkbox-container">
+                        <div className="checkbox-check"></div>
+                        <div className="checkbox-label">Sidebar Links</div>
+                    </div>
                 </div>
             </div>
         )
