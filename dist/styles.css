@@ -246,19 +246,23 @@ input[type=range]::-webkit-slider-thumb {
 
 /* Font List */
 .font-list {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    background-color: transparent;
-    border: 0;
-    color: white;
-    -webkit-appearance: none;
-}
-
-.font-list:focus {
-    outline: none;
-}
-
-.font-list option {
+    height: 200px;
+    overflow-y: scroll;
+    overflow-x: hidden;
     font-size: 14px;
-    padding: 5px 20px;
-    height: 30px;
+}
+
+.font-list-item {
+    cursor: pointer;
+    padding: 0 10px;
+    height: 40px;
+    line-height: 40px;
+    white-space: nowrap;
+}
+
+.font-list-item:hover {
+    background-color: rgba(255,255,255,.1);
 }

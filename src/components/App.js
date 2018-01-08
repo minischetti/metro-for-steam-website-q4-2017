@@ -242,12 +242,14 @@ class FontList extends React.Component {
         this.startScroll = this.startScroll.bind(this);
         this.state = { intervalId: "" }
     }
+
     componentDidMount() {
         const fontList = document.getElementById("font-list");
-        fontList.addEventListener("change", (event) => {
-            this.handleFontChange(event.target.value);
+        fontList.addEventListener("click", (event) => {
+            this.handleFontChange(event.target.dataset.value);
         });
     }
+
     autoScrollElement() {
         const elements = document.querySelectorAll(".auto-scroll-element");
         elements.forEach((element) => {
@@ -264,6 +266,7 @@ class FontList extends React.Component {
             }
         });
     }
+
     startScroll() {
         let intervalId = setInterval(this.autoScrollElement, 60);
         this.setState({ intervalId: intervalId })
@@ -273,11 +276,12 @@ class FontList extends React.Component {
         this.props.updateSelectedFont(font);
         // this.startScroll();
     }
+
     render() {
         const selectedFont = this.props.selectedFont.name || "Roboto";
         const fonts = this.props.fonts;
         const fontList = fonts.map((font, index) =>
-            <option key={font.name} value={index} style={{ fontFamily: font.name }}>{font.name}</option>
+            <span key={font.name} className="font-list-item" data-value={index} style={{ fontFamily: font.name }}>{font.name}</span>
         );
         return (
             <div className="font-settings-container settings-container">
@@ -286,9 +290,9 @@ class FontList extends React.Component {
                     <div className="setting-current auto-scroll-element">{selectedFont}</div>
                 </div>
                 <form>
-                    <select name="font" id="font-list" size="10" className="font-list">
+                    <div id="font-list" className="font-list">
                         {fontList}
-                    </select>
+                    </div>
                 </form>
             </div>
         )
