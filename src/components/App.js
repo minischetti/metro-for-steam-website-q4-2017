@@ -17,7 +17,8 @@ class App extends React.Component {
         this.constructFontImport = this.constructFontImport.bind(this);
         this.updateSelectedFont = this.updateSelectedFont.bind(this);
         this.retrieveSelectedFont = this.retrieveSelectedFont.bind(this);
-        this.state = { compatibleFonts: [], selectedFont: "Roboto", customize: false, red: "0", green: "197", blue: "255" };
+        this.updateCurrentPage = this.updateCurrentPage.bind(this);
+        this.state = { compatibleFonts: [], selectedFont: "Roboto", currentPage: "home", red: "0", green: "197", blue: "255" };
     }
 
     componentDidMount() {
@@ -46,6 +47,10 @@ class App extends React.Component {
             .then((response) => {
                 return response.blob();
             });
+    }
+
+    updateCurrentPage(page) {
+        this.setState({ currentPage: page });
     }
 
     fetchWebFonts() {
@@ -91,7 +96,7 @@ class App extends React.Component {
                 .then((zip) => {
                     zip.file("custom.styles", options);
 
-                    // TODO If a setting requires that this file is modified, remove the old one and replace it with the new one
+                    // [TODO] If a setting requires that this file is modified, remove the old one and replace it with the new one
                     // zip.folder("resource/layout/").remove("steamrootdialog_gamespage_details.layout");
                     // zip.file("resource/layout/steamrootdialog_gamespage_details.layout", fetchOption);
 
@@ -118,7 +123,7 @@ class App extends React.Component {
     }
 
     setDefaultFont(font) {
-        this.setState ({ selectedFont: font });
+        this.setState({ selectedFont: font });
     }
 
     updateSelectedFont(fontIndex) {
@@ -142,17 +147,25 @@ class App extends React.Component {
         this.setState({ customize: !this.state.customize });
     }
 
+    updateTourState() {
+        this.setState({ customize: !this.state.customize });
+    }
+
     render() {
+        let currentPage = this.state.currentPage;
         return (
-            <div className={`page ${this.state.customize ? "customize" : "home"}`}>
+            <div className={`page ${currentPage}`}>
                 <div className="top-header">
                     <div className="top-button-container">
-                        <div onClick={this.updateCustomizeState} className="top-button customize-button">Customize</div>
+                        <div onClick={() => this.updateCurrentPage("home")} className="home-button">Back</div>
+                        <div onClick={() => this.updateCurrentPage("help")} className="top-button help-button">Help</div>
+                        <div onClick={() => this.updateCurrentPage("customize")} className="top-button customize-button">Customize</div>
                         <div onClick={this.downloadZip} className="top-button download-button">Download</div>
                     </div>
                 </div>
+                <HelpPage/>
                 <div className="main">
-                    <p className="hero-text">A new look for the platform you already know and love.</p>
+                    <h1 className="hero-text">A new look for the platform you already know and love.</h1>
                     <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont} />
                 </div>
                 <div className="customization-panel">
@@ -225,15 +238,33 @@ class CustomizationPanel extends React.Component {
 }
 
 class ColorPicker extends React.Component {
+    constructor(props) {
+        super(props);
+        this.toHexString = this.toHexString.bind(this);
+        this.toHex = this.toHex.bind(this);
+    }
+    toHex(number) {
+        let hex = parseInt(number).toString(16);
+        while (hex.length < 2) { hex = "0" + hex; }
+        return hex;
+    }
+    toHexString() {
+        let r = this.toHex(this.props.red);
+        let g = this.toHex(this.props.green);
+        let b = this.toHex(this.props.blue);
+        return `#${r}${g}${b}`;
+    }
     render() {
         const red = this.props.red;
         const green = this.props.green;
         const blue = this.props.blue;
+        const hex = this.toHexString();
+        const rgb = `rgb(${red}, ${green}, ${blue})`
         return (
             <div className="color-picker-container settings-container">
                 <div className="setting-header">
                     <div className="setting-title">Color</div>
-                    <div className="setting-current">rgb({red}, {green}, {blue})</div>
+                    <div className="setting-current">{rgb}</div>
                 </div>
                 <div className="setting-content-container">
                     <input type="range" min="1" max="255" defaultValue={red} className="slider" onInput={this.props.updateRedValue} id="red" />
@@ -270,9 +301,9 @@ class FontList extends React.Component {
             let distance = this.state.intervalId;
             if (distance < distanceToEnd) {
                 element.scrollLeft = distance;
-                this.setState({intervalId: distance + .25});
+                this.setState({ intervalId: distance + .25 });
             } else {
-                this.setState({intervalId: 0});
+                this.setState({ intervalId: 0 });
                 clearInterval(this.state.intervalId);
             }
         });
@@ -321,6 +352,29 @@ class DetailsViewSettings extends React.Component {
                     <div className="checkbox-container">
                         <div className="checkbox-check"></div>
                         <div className="checkbox-label">Sidebar Links</div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+class HelpPage extends React.Component {
+    render() {
+        return (
+            <div className="help-page">
+                <div className="help-content">
+                    <div className="step step-1">
+                        <div className="step-title"><span>01</span>Download</div>
+                        <p>Download Metro...or customize it first! The download will include your custom color, font and any other settings you may have changed.</p>
+                    </div>
+                    <div className="step step-2">
+                        <div className="step-title"><span>02</span>Install</div>
+                        <p>Find your Steam directory. From there, open the skins folder and copy Metro to it.</p>
+                    </div>
+                    <div className="step step-3">
+                        <div className="step-title"><span>03</span>Enable</div>
+                        <p>Open the Steam settings window and go to the Interface page. From there, choose Metro in the skin selection dropdown. Restart Steam and enjoy!</p>
                     </div>
                 </div>
             </div>
