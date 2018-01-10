@@ -145,12 +145,13 @@ class App extends React.Component {
     render() {
         return (
             <div className={`page ${this.state.customize ? "customize" : "home"}`}>
-                <div className="main">
-                    <div className="background-color" style={{ backgroundColor: `rgba(${this.state.red}, ${this.state.green}, ${this.state.blue}, .25)` }}></div>
-                    <div className="button-container">
-                        <div onClick={this.updateCustomizeState} className="big-button customize-button">Customize</div>
-                        <div onClick={this.downloadZip} className="big-button download-button">Download</div>
+                <div className="top-header">
+                    <div className="top-button-container">
+                        <div onClick={this.updateCustomizeState} className="top-button customize-button">Customize</div>
+                        <div onClick={this.downloadZip} className="top-button download-button">Download</div>
                     </div>
+                </div>
+                <div className="main">
                     <p className="hero-text">A new look for the platform you already know and love.</p>
                     <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont} />
                 </div>
