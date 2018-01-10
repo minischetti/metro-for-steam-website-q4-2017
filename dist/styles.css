@@ -104,13 +104,6 @@ p {
     width: 100%;
 }
 
-.main {
-    position: relative;
-    transition: .5s width;
-    padding-top: 80px;
-}
-
-
 /* Customization Panel */
 .customization-panel {
     position: absolute;
