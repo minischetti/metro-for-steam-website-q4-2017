@@ -1,6 +1,8 @@
 $transition-timing: cubic-bezier(1, -0.2, 0.2, 1)
 
 @import "steam.sass"
+@import "social.sass"
+@import "menu.sass"
 
 html, body, #app, .wrap, .main, .page
     display: flex
@@ -11,6 +13,7 @@ html, body, #app, .wrap, .main, .page
 
 body
     font-family: 'Roboto', sans-serif
+    font-weight: 300
     background-color: #eee
     color: black
     overflow: hidden
@@ -22,6 +25,9 @@ h1
     margin: 0
     font-size: 36px
     font-weight: 100
+
+p
+    line-height: 1.7
 
 .background-color
     position: absolute
@@ -64,6 +70,7 @@ h1
     color: black
     text-transform: uppercase
     font-size: 12px
+    font-weight: 400
     &:not(:last-child)
         margin-right: 10px
 
@@ -160,17 +167,15 @@ h1
 
 // Home View Active
 .home
-    .home-button
+    .home-menu–item
         pointer-events: none
-        opacity: 0
-        transform: translateX(-50%)
+        color: red
 
 // Customization View Active
 .customize
-    .customize-button
+    .personalize-menu-item
         pointer-events: none
-        .nav-indicator
-            transform: scale(1)
+        color: red
     .hero-text
         opacity: 0
     .window
@@ -187,10 +192,9 @@ h1
     .step
         opacity: 1
         transform: translateY(0)
-    .help-button
+    .help-menu-item
         pointer-events: none
-        .nav-indicator
-            transform: scale(1)
+        color: red
     .hero-text
         opacity: 0
     .window

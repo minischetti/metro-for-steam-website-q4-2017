@@ -2,7 +2,6 @@ import React from 'react'
 import JSZip from 'jszip'
 import JSZipUtils from 'jszip-utils'
 import FileSaver from 'file-saver'
-import { setTimeout } from 'timers';
 
 class App extends React.Component {
     constructor(props) {
@@ -18,7 +17,7 @@ class App extends React.Component {
         this.updateSelectedFont = this.updateSelectedFont.bind(this);
         this.retrieveSelectedFont = this.retrieveSelectedFont.bind(this);
         this.updateCurrentPage = this.updateCurrentPage.bind(this);
-        this.state = { compatibleFonts: [], selectedFont: "Roboto", currentPage: "home", red: "0", green: "197", blue: "255" };
+        this.state = { compatibleFonts: [], selectedFont: "Roboto", currentPage: "home", pages: ["home", "customize", "help"], red: "0", green: "197", blue: "255" };
     }
 
     componentDidMount() {
@@ -153,11 +152,11 @@ class App extends React.Component {
             <div className={`page ${currentPage}`}>
                 <div className="background-color" style={{ backgroundImage: `linear-gradient(${rgb}, transparent)`}}></div>
                 <div className="top-header">
-                    <div onClick={() => this.updateCurrentPage("home")} className="top-button home-button">Home</div>
-                    <div className="top-button-container">
+                    {/* <div onClick={() => this.updateCurrentPage("home")} className="top-button home-button">Home</div> */}
+                    {/* <div className="top-button-container">
                         <div onClick={() => this.updateCurrentPage("help")} className="top-button top-nav-button help-button"><div className="nav-indicator"></div>Help</div>
                         <div onClick={() => this.updateCurrentPage("customize")} className="top-button top-nav-button customize-button"><div className="nav-indicator"></div>Customize</div>
-                    </div>
+                    </div> */}
                     <div onClick={this.downloadZip} className="top-button download-button">Download</div>
                 </div>
                 <HelpPage/>
@@ -168,11 +167,38 @@ class App extends React.Component {
                 <div className="customization-panel">
                     <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} selectedFont={this.state.selectedFont} fonts={this.state.compatibleFonts} />
                 </div>
+                <SocialLinks/>
+                <Menu currentPage={this.state.currentPage} pages={this.state.pages} updateCurrentPage={this.updateCurrentPage}/>
             </div>
         )
     }
 
 
+}
+
+class Menu extends React.Component {
+    toggleMenu() {
+        const menu = document.querySelector(".menu");
+        menu.classList.toggle("active");
+    }
+    selectMenuItem(page) {
+        this.toggleMenu();
+        this.props.updateCurrentPage(page);
+    }
+    render() {
+        const pages = this.props.pages;
+        const pageList = pages.map((pageName, index) =>
+            <div onClick={() => this.selectMenuItem(pageName)} className={`menu-item {pageName}-menu-item`}>{pageName}</div>
+        );
+        return (
+            <div className="menu">
+                <div onClick={() => this.toggleMenu()} className="current-page">{this.props.currentPage}</div>
+                <div className="menu-item-container">
+                    {pageList}
+                </div>
+            </div>
+        )
+    }
 }
 
 class Steam extends React.Component {
@@ -356,6 +382,30 @@ class DetailsViewSettings extends React.Component {
     }
 }
 
+class SocialLinks extends React.Component {
+    toggleExpansion(event) {
+        event.target.parentNode.classList.toggle("active");
+    }
+    render() {
+        return (
+            <div className="social-container">
+                <div className="link-container">
+                    <a className="external-link" href="https://twitter.com/thisisdomdraper"><img src="./assets/twitter.svg" /></a>
+                    <a className="external-link" href="https://www.youtube.com/user/domminischetti?sub_confirmation=1"><img src="./assets/youtube.svg" /></a>
+                    <a className="external-link" href="http://steamcommunity.com/groups/metroforsteam"><img src="./assets/steam.svg" /></a>
+                    <span className="link-toggle" onClick={(event) => this.toggleExpansion(event)}>Connect</span>
+                </div>
+                <div className="link-container">
+                    <a className="external-link" href="https://domdraper.bandcamp.com/"><img src="./assets/bandcamp.svg" /></a>
+                    <a className="external-link" href="http://www.patreon.com/dommini"><img src="./assets/patreon.svg" /></a>
+                    <a className="external-link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BDL2J3MEETZ3J&lc=US&item_name=Metro%20for%20Steam&item_number=metroforsteam&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="./assets/paypal.svg" /></a>
+                    <span className="link-toggle" onClick={(event) => this.toggleExpansion(event)}>Support</span>
+                </div>
+            </div>
+        )
+    }
+}
+
 class HelpPage extends React.Component {
     render() {
         return (
@@ -363,7 +413,7 @@ class HelpPage extends React.Component {
                 <div className="help-content">
                     <div className="step step-1">
                         <div className="step-title"><span>01</span>Download</div>
-                        <p>Download Metro... or customize it first! The download will include your custom color, font and any other settings you may have changed.</p>
+                        <p>Download Metro... or personalize it first! The download will include your custom color, font and any other settings you may have changed.</p>
                     </div>
                     <div className="step step-2">
                         <div className="step-title"><span>02</span>Install</div>
@@ -371,6 +421,29 @@ class HelpPage extends React.Component {
                     </div>
                     <div className="step step-3">
                         <div className="step-title"><span>03</span>Enable</div>
+                        <p>In Steam, open the settings window and go to the Interface page. From there, choose Metro in the skin selection dropdown. Restart Steam and enjoy!</p>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+class SupportPage extends React.Component {
+    render() {
+        return (
+            <div className="help-page">
+                <div className="help-content">
+                    <div className="step step-1">
+                        <div className="step-title"><span>01</span>Following</div>
+                        <p>Be sure to follow me on <a className="external-link" href="https://www.youtube.com/user/domminischetti?sub_confirmation=1"><img src="./assets/youtube.svg" /></a> and join the official Steam Community group.</p>
+                    </div>
+                    <div className="step step-2">
+                        <div className="step-title"><span>02</span>Listening</div>
+                        <p>Open your Steam directory. From there, open the skins folder and copy Metro to it.</p>
+                    </div>
+                    <div className="step step-3">
+                        <div className="step-title"><span>03</span>Supporting</div>
                         <p>In Steam, open the settings window and go to the Interface page. From there, choose Metro in the skin selection dropdown. Restart Steam and enjoy!</p>
                     </div>
                 </div>

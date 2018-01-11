@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="31" height="18" viewBox="0 0 43 25">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #6624e2;
+        stroke-width: 1px;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Logo" class="cls-1" d="M1093,1249h28l-14,24h-28Z" transform="translate(-1078.5 -1248.5)"/>
+</svg>
