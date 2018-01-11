@@ -2,6 +2,7 @@ import React from 'react'
 import JSZip from 'jszip'
 import JSZipUtils from 'jszip-utils'
 import FileSaver from 'file-saver'
+import { setTimeout } from 'timers';
 
 class App extends React.Component {
     constructor(props) {
@@ -11,7 +12,6 @@ class App extends React.Component {
         this.updateRedValue = this.updateRedValue.bind(this);
         this.updateGreenValue = this.updateGreenValue.bind(this);
         this.updateBlueValue = this.updateBlueValue.bind(this);
-        this.updateCustomizeState = this.updateCustomizeState.bind(this);
         this.fetchWebFonts = this.fetchWebFonts.bind(this);
         this.constructCompatibleFontList = this.constructCompatibleFontList.bind(this);
         this.constructFontImport = this.constructFontImport.bind(this);
@@ -143,25 +143,22 @@ class App extends React.Component {
         this.setState({ blue: event.target.value });
     }
 
-    updateCustomizeState() {
-        this.setState({ customize: !this.state.customize });
-    }
-
-    updateTourState() {
-        this.setState({ customize: !this.state.customize });
-    }
-
     render() {
         let currentPage = this.state.currentPage;
+        const red = this.state.red;
+        const green = this.state.green;
+        const blue = this.state.blue;
+        const rgb = `rgb(${red}, ${green}, ${blue})`
         return (
             <div className={`page ${currentPage}`}>
+                <div className="background-color" style={{ backgroundImage: `linear-gradient(${rgb}, transparent)`}}></div>
                 <div className="top-header">
+                    <div onClick={() => this.updateCurrentPage("home")} className="top-button home-button">Home</div>
                     <div className="top-button-container">
-                        <div onClick={() => this.updateCurrentPage("home")} className="home-button">Back</div>
-                        <div onClick={() => this.updateCurrentPage("help")} className="top-button help-button">Help</div>
-                        <div onClick={() => this.updateCurrentPage("customize")} className="top-button customize-button">Customize</div>
-                        <div onClick={this.downloadZip} className="top-button download-button">Download</div>
+                        <div onClick={() => this.updateCurrentPage("help")} className="top-button top-nav-button help-button"><div className="nav-indicator"></div>Help</div>
+                        <div onClick={() => this.updateCurrentPage("customize")} className="top-button top-nav-button customize-button"><div className="nav-indicator"></div>Customize</div>
                     </div>
+                    <div onClick={this.downloadZip} className="top-button download-button">Download</div>
                 </div>
                 <HelpPage/>
                 <div className="main">
@@ -366,15 +363,15 @@ class HelpPage extends React.Component {
                 <div className="help-content">
                     <div className="step step-1">
                         <div className="step-title"><span>01</span>Download</div>
-                        <p>Download Metro...or customize it first! The download will include your custom color, font and any other settings you may have changed.</p>
+                        <p>Download Metro... or customize it first! The download will include your custom color, font and any other settings you may have changed.</p>
                     </div>
                     <div className="step step-2">
                         <div className="step-title"><span>02</span>Install</div>
-                        <p>Find your Steam directory. From there, open the skins folder and copy Metro to it.</p>
+                        <p>Open your Steam directory. From there, open the skins folder and copy Metro to it.</p>
                     </div>
                     <div className="step step-3">
                         <div className="step-title"><span>03</span>Enable</div>
-                        <p>Open the Steam settings window and go to the Interface page. From there, choose Metro in the skin selection dropdown. Restart Steam and enjoy!</p>
+                        <p>In Steam, open the settings window and go to the Interface page. From there, choose Metro in the skin selection dropdown. Restart Steam and enjoy!</p>
                     </div>
                 </div>
             </div>
