@@ -178,7 +178,7 @@ class App extends React.Component {
 
 class Menu extends React.Component {
     toggleMenu() {
-        const menu = document.querySelector(".menu");
+        const menu = document.querySelector(".hamburger");
         menu.classList.toggle("active");
     }
     selectMenuItem(page) {
@@ -191,12 +191,24 @@ class Menu extends React.Component {
             <div onClick={() => this.selectMenuItem(pageName)} className={`menu-item {pageName}-menu-item`}>{pageName}</div>
         );
         return (
-            <div className="menu">
-                <div onClick={() => this.toggleMenu()} className="current-page">{this.props.currentPage}</div>
-                <div className="menu-item-container">
-                    {pageList}
+            <div className="hamburger" onClick={() => this.toggleMenu()}>
+                <div className="hamburger-line-container">
+                    <div className="vertical">
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div className="middle">
+                        <span></span>
+                        <span></span>
+                    </div>
                 </div>
             </div>
+            // <div className="menu">
+            //     <div onClick={() => this.toggleMenu()} className="current-page">{this.props.currentPage}</div>
+            //     <div className="menu-item-container">
+            //         {pageList}
+            //     </div>
+            // </div>
         )
     }
 }
