@@ -152,28 +152,38 @@ class App extends React.Component {
             <div className={`page ${currentPage}`}>
                 <div className="background-color" style={{ backgroundImage: `linear-gradient(${rgb}, transparent)`}}></div>
                 <div className="top-header">
-                    {/* <div onClick={() => this.updateCurrentPage("home")} className="top-button home-button">Home</div> */}
-                    {/* <div className="top-button-container">
-                        <div onClick={() => this.updateCurrentPage("help")} className="top-button top-nav-button help-button"><div className="nav-indicator"></div>Help</div>
-                        <div onClick={() => this.updateCurrentPage("customize")} className="top-button top-nav-button customize-button"><div className="nav-indicator"></div>Customize</div>
-                    </div> */}
                     <div onClick={this.downloadZip} className="top-button download-button">Download</div>
                 </div>
+                <HomePage/>
                 <HelpPage/>
-                <div className="main">
-                    <h1 className="hero-text">A new look for the platform you already know and love.</h1>
-                    <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont} />
-                </div>
-                <div className="customization-panel">
-                    <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} selectedFont={this.state.selectedFont} fonts={this.state.compatibleFonts} />
-                </div>
-                <SocialLinks/>
+                <Steam red={this.state.red} green={this.state.green} blue={this.state.blue} downloadZip={this.downloadZip} selectedFont={this.state.selectedFont} />
+                <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} selectedFont={this.state.selectedFont} fonts={this.state.compatibleFonts} />
                 <Menu currentPage={this.state.currentPage} pages={this.state.pages} updateCurrentPage={this.updateCurrentPage} red={this.state.red} green={this.state.green} blue={this.state.blue}/>
             </div>
         )
     }
+}
 
+class Sidebar extends React.Component {
+    render() {
+        return (
+            <div className="sidebar">
+                <div className="sidebar-nav-link">Download</div>
+                <div className="sidebar-nav-link">Customize</div>
+                <div className="sidebar-nav-link">Help</div>
+            </div>
+        )
+    }
+}
 
+class HomePage extends React.Component {
+    render() {
+        return (
+            <div className="main">
+                <h1 className="hero-text">A new look for the platform you already know and love.</h1>
+            </div>
+        )
+    }
 }
 
 class Menu extends React.Component {
@@ -197,7 +207,7 @@ class Menu extends React.Component {
         const currentColor = `rgb(${this.props.red}, ${this.props.green}, ${this.props.blue})`
         const pages = this.props.pages;
         const pageList = pages.map((pageName, index) =>
-            <div onClick={() => this.selectMenuItem(pageName)} className={`menu-item ${pageName}-menu-item ${this.isCurrentPage(pageName) ? " active" : ""}`} style={{color: this.isCurrentPage(pageName) ? currentColor : ""}}>{pageName}</div>
+            <div onClick={() => this.selectMenuItem(pageName)} className={`menu-item${this.isCurrentPage(pageName) ? " active" : ""}`} style={{color: this.isCurrentPage(pageName) ? currentColor : ""}}>{pageName}</div>
         );
         return (
             <div className="menu">
@@ -208,8 +218,26 @@ class Menu extends React.Component {
                         <span></span>
                     </div>
                 </div>
-                <div className="menu-item-container">
-                    {pageList}
+                <div className="menu-content-container">
+                    <div className="menu-section">
+                        {pageList}
+                    </div>
+                    <div className="menu-section">
+                        <div>Connect</div>
+                        <div className="link-container">
+                            <a className="external-link" href="https://twitter.com/thisisdomdraper"><img src="./assets/twitter.svg" /></a>
+                            <a className="external-link" href="https://www.youtube.com/user/domminischetti?sub_confirmation=1"><img src="./assets/youtube.svg" /></a>
+                            <a className="external-link" href="http://steamcommunity.com/groups/metroforsteam"><img src="./assets/steam.svg" /></a>
+                        </div>
+                    </div>
+                    <div className="menu-section">
+                        <div>Support</div>
+                        <div className="link-container">
+                            <a className="external-link" href="https://domdraper.bandcamp.com/"><img src="./assets/bandcamp.svg" /></a>
+                            <a className="external-link" href="http://www.patreon.com/dommini"><img src="./assets/patreon.svg" /></a>
+                            <a className="external-link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BDL2J3MEETZ3J&lc=US&item_name=Metro%20for%20Steam&item_number=metroforsteam&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="./assets/paypal.svg" /></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         )
@@ -266,7 +294,7 @@ class Steam extends React.Component {
 class CustomizationPanel extends React.Component {
     render() {
         return (
-            <div>
+            <div className="customization-panel">
                 <ColorPicker red={this.props.red} green={this.props.green} blue={this.props.blue} updateRedValue={this.props.updateRedValue} updateGreenValue={this.props.updateGreenValue} updateBlueValue={this.props.updateBlueValue} />
                 <FontList fonts={this.props.fonts} updateSelectedFont={this.props.updateSelectedFont} selectedFont={this.props.selectedFont} />
                 <DetailsViewSettings />
@@ -392,44 +420,6 @@ class DetailsViewSettings extends React.Component {
                         <div className="checkbox-label">Sidebar Links</div>
                     </div>
                 </div>
-            </div>
-        )
-    }
-}
-
-class SocialLinks extends React.Component {
-    toggleExpansion(event) {
-        event.target.parentNode.classList.toggle("active");
-    }
-    render() {
-        return (
-            <div className="social-container">
-                <div className="link-container">
-                    <a className="external-link" href="https://twitter.com/thisisdomdraper"><img src="./assets/twitter.svg" /></a>
-                    <a className="external-link" href="https://www.youtube.com/user/domminischetti?sub_confirmation=1"><img src="./assets/youtube.svg" /></a>
-                    <a className="external-link" href="http://steamcommunity.com/groups/metroforsteam"><img src="./assets/steam.svg" /></a>
-                    <span className="link-toggle" onClick={(event) => this.toggleExpansion(event)}>Connect</span>
-                </div>
-                <div className="link-container">
-                    <a className="external-link" href="https://domdraper.bandcamp.com/"><img src="./assets/bandcamp.svg" /></a>
-                    <a className="external-link" href="http://www.patreon.com/dommini"><img src="./assets/patreon.svg" /></a>
-                    <a className="external-link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BDL2J3MEETZ3J&lc=US&item_name=Metro%20for%20Steam&item_number=metroforsteam&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="./assets/paypal.svg" /></a>
-                    <span className="link-toggle" onClick={(event) => this.toggleExpansion(event)}>Support</span>
-                </div>
-            </div>
-        )
-    }
-}
-
-class AltSocialLinks extends React.Component {
-    render() {
-        return (
-            <div className="social-container">
-                <a className="social-link" href="https://twitter.com/thisisdomdraper"><img src="./assets/twitter.svg" /></a>
-                <a className="social-link" href="http://steamcommunity.com/groups/metroforsteam"><img src="./assets/steam.svg" /></a>
-                <a className="social-link" href="https://domdraper.bandcamp.com/"><img src="./assets/bandcamp.svg" /></a>
-                <a className="social-link" href="http://www.patreon.com/dommini"><img src="./assets/patreon.svg" /></a>
-                <a className="social-link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BDL2J3MEETZ3J&lc=US&item_name=Metro%20for%20Steam&item_number=metroforsteam&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="./assets/paypal.svg" /></a>
             </div>
         )
     }
