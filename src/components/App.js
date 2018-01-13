@@ -168,7 +168,7 @@ class App extends React.Component {
                     <CustomizationPanel red={this.state.red} green={this.state.green} blue={this.state.blue} updateRedValue={this.updateRedValue} updateGreenValue={this.updateGreenValue} updateBlueValue={this.updateBlueValue} updateSelectedFont={this.updateSelectedFont} selectedFont={this.state.selectedFont} fonts={this.state.compatibleFonts} />
                 </div>
                 <SocialLinks/>
-                <Menu currentPage={this.state.currentPage} pages={this.state.pages} updateCurrentPage={this.updateCurrentPage}/>
+                <Menu currentPage={this.state.currentPage} pages={this.state.pages} updateCurrentPage={this.updateCurrentPage} red={this.state.red} green={this.state.green} blue={this.state.blue}/>
             </div>
         )
     }
@@ -177,6 +177,10 @@ class App extends React.Component {
 }
 
 class Menu extends React.Component {
+    constructor(props) {
+        super(props);
+        this.isCurrentPage = this.isCurrentPage.bind(this);
+    }
     toggleMenu() {
         const menu = document.querySelector(".menu");
         menu.classList.toggle("active");
@@ -185,14 +189,25 @@ class Menu extends React.Component {
         this.toggleMenu();
         this.props.updateCurrentPage(page);
     }
+    isCurrentPage(pageName) {
+        const currentPage = this.props.currentPage;
+        return (pageName === currentPage);
+    }
     render() {
+        const currentColor = `rgb(${this.props.red}, ${this.props.green}, ${this.props.blue})`
         const pages = this.props.pages;
         const pageList = pages.map((pageName, index) =>
-            <div onClick={() => this.selectMenuItem(pageName)} className={`menu-item {pageName}-menu-item`}>{pageName}</div>
+            <div onClick={() => this.selectMenuItem(pageName)} className={`menu-item ${pageName}-menu-item ${this.isCurrentPage(pageName) ? " active" : ""}`} style={{color: this.isCurrentPage(pageName) ? currentColor : ""}}>{pageName}</div>
         );
         return (
             <div className="menu">
-                <div onClick={() => this.toggleMenu()} className="current-page">{this.props.currentPage}</div>
+                <div className="hamburger-container" onClick={() => this.toggleMenu()}>
+                    <div className="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
                 <div className="menu-item-container">
                     {pageList}
                 </div>
@@ -401,6 +416,20 @@ class SocialLinks extends React.Component {
                     <a className="external-link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BDL2J3MEETZ3J&lc=US&item_name=Metro%20for%20Steam&item_number=metroforsteam&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="./assets/paypal.svg" /></a>
                     <span className="link-toggle" onClick={(event) => this.toggleExpansion(event)}>Support</span>
                 </div>
+            </div>
+        )
+    }
+}
+
+class AltSocialLinks extends React.Component {
+    render() {
+        return (
+            <div className="social-container">
+                <a className="social-link" href="https://twitter.com/thisisdomdraper"><img src="./assets/twitter.svg" /></a>
+                <a className="social-link" href="http://steamcommunity.com/groups/metroforsteam"><img src="./assets/steam.svg" /></a>
+                <a className="social-link" href="https://domdraper.bandcamp.com/"><img src="./assets/bandcamp.svg" /></a>
+                <a className="social-link" href="http://www.patreon.com/dommini"><img src="./assets/patreon.svg" /></a>
+                <a className="social-link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BDL2J3MEETZ3J&lc=US&item_name=Metro%20for%20Steam&item_number=metroforsteam&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="./assets/paypal.svg" /></a>
             </div>
         )
     }
